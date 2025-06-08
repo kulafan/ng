@@ -81,12 +81,12 @@
     <!-- 英雄区域 -->
     <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">
-            <video class="w-full video_bg phone_video_bg relative -z-1" autoplay muted loop playsinline webkit-playsinline x5-playsinline id="videobg"
+            <video class="w-full h-full object-cover video_bg phone_video_bg relative -z-1" autoplay muted loop playsinline webkit-playsinline x5-playsinline id="videobg"
 			poster="video/bg.jpg">
       <source src="video/bg.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-//            <img src="https://picsum.photos/id/1048/1920/1080" alt="团队协作背景" class="w-full h-full object-cover">
+
             <div class="absolute inset-0 bg-dark/60"></div>
         </div>
 
@@ -107,12 +107,12 @@
             </div>
         </div>
 
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-            <a href="#about" class="flex flex-col items-center">
-                <span class="mb-2">向下滚动</span>
-                <i class="fa fa-chevron-down"></i>
-            </a>
-        </div>
+		<div class="fixed bottom-8 inset-x-0 z-10 place-items-center grid">
+		  <a href="#about" class="flex flex-col items-center text-white animate-bounce">
+		    <span class="mb-2 text-sm md:text-base">向下滚动</span>
+		    <i class="fa fa-chevron-down text-2xl"></i>
+		  </a>
+		</div>
     </section>
 
     <!-- 关于我们 -->
