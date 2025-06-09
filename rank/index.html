@@ -243,7 +243,7 @@
 
       try {
         // 从/data目录获取JSON数据
-        const res = await fetch(`/data/${season}.json`);
+        const res = await fetch(`/rank/data/${season}.json`);
         
         if (!res.ok) {
           throw new Error(`数据加载失败: ${res.statusText}`);
