@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>NG赌神大赛</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#8B5CF6',
+            secondary: '#EC4899',
+            accent: '#F59E0B',
+            dark: '#1F2937',
+            light: '#F9FAFB',
+            poker: {
+              green: '#2e8b57',
+              darkGreen: '#1a472a',
+              gold: '#FFD700',
+              card: '#0f2818'
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            inter: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 4px 20px rgba(0, 0, 0, 0.3)',
+            'glow': '0 0 15px rgba(255, 215, 0, 0.6)',
+            'card-hover': '0 8px 30px rgba(255, 215, 0, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+      }
+      .text-shadow-gold {
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+      }
+      .bg-poker-table {
+        background: radial-gradient(circle, #2e8b57, #1a472a);
+      }
+      .bg-card {
+        background: linear-gradient(135deg, rgba(46, 139, 87, 0.9), rgba(26, 71, 42, 0.95));
+      }
+      .hover-scale {
+        transition: transform 0.3s ease;
+      }
+      .hover-scale:hover {
+        transform: scale(1.03);
+      }
+      .chip-animation {
+        animation: chipShimmer 2s infinite;
+      }
+      @keyframes chipShimmer {
+        0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .card-flip {
+        animation: cardFlip 0.6s ease;
+      }
+      @keyframes cardFlip {
+        0% { transform: rotateY(90deg); opacity: 0; }
+        100% { transform: rotateY(0deg); opacity: 1; }
+      }
+    }
+  </style>
+</head>
+<body class="bg-poker-table min-h-screen font-inter text-white overflow-x-hidden">
+  <!-- 页面装饰元素 -->
+  <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+    <div class="absolute top-10 left-10 w-20 h-20 bg-poker-gold rounded-full filter blur-xl"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-primary rounded-full filter blur-xl"></div>
+    <div class="absolute top-1/3 right-1/4 w-16 h-16 bg-secondary rounded-full filter blur-xl"></div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 relative z-10">
+    <!-- 页面标题 -->
+    <a href="./index.html" class="flex items-center space-x-2">
+      <!-- 替换内联SVG为外部SVG文件 -->
+      <img src="./img/logo.png" alt="NG集团" class="w-10 h-10 rounded-lg bg-primary object-contain" />
+      <span class="text-xl font-bold text-white text-shadow">NG集团</span>
+    </a>
+    <header class="text-center mb-10 fade-in">
+      <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-cinzel font-bold text-poker-gold text-shadow-gold mb-4">
+        <span class="text-poker-gold">♠</span> NG赌神大赛 <span class="text-poker-gold">♣</span>
+      </h1>
+      <p class="text-lg text-white/80 max-w-2xl mx-auto">
+        见证高手对决，记录每一位传奇玩家的辉煌战绩
+      </p>
+    </header>
+
+    <!-- 赛季选择器 -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 fade-in" style="animation-delay: 0.2s;">
+      <div class="w-full md:w-auto">
+        <label for="season" class="block text-lg font-medium text-white mb-2">选择比赛届数：</label>
+        <div class="relative">
+          <select id="season" onchange="loadRanking()" class="w-full md:w-64 bg-poker-darkGreen/80 border border-poker-gold/50 text-white rounded-lg px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-poker-gold/80 transition-all">
+
+            <option value="season2">第二届</option>
+            <option value="season1">第一届</option>
+            
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+            <i class="fa fa-chevron-down text-poker-gold"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="w-full md:w-auto">
+        <div class="bg-poker-darkGreen/70 rounded-lg p-4 border border-poker-gold/30 shadow-card">
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-full bg-poker-gold/20 flex items-center justify-center mr-4">
+              <i class="fa fa-trophy text-poker-gold text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-cinzel text-xl font-medium text-poker-gold">当前赛季</h3>
+              <p class="text-white/70">第五届 - 2025年夏季赛</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载状态 -->
+    <div id="loading" class="flex justify-center items-center py-12 fade-in">
+      <div class="flex flex-col items-center">
+        <div class="w-16 h-16 border-4 border-poker-gold/50 border-t-poker-gold rounded-full animate-spin mb-4"></div>
+        <p class="text-xl text-white/80">正在加载排行榜数据...</p>
+      </div>
+    </div>
+
+    <!-- 排行榜表格 -->
+    <table id="rankingTable" class="w-full bg-card rounded-xl shadow-card overflow-hidden display-none fade-in">
+      <thead>
+        <tr class="bg-poker-darkGreen/80">
+          <th class="px-6 py-4 text-left text-lg font-cinzel text-poker-gold">排名</th>
+          <th class="px-6 py-4 text-left text-lg font-cinzel text-poker-gold">玩家</th>
+          <th class="px-6 py-4 text-left text-lg font-cinzel text-poker-gold">筹码</th>
+          <th class="px-6 py-4 text-left text-lg font-cinzel text-poker-gold">状态</th>
+        </tr>
+      </thead>
+      <tbody id="rankingBody"></tbody>
+    </table>
+
+    <!-- 统计信息 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 fade-in" style="animation-delay: 0.4s;">
+      <div class="bg-poker-darkGreen/70 rounded-lg p-6 border border-poker-gold/30 shadow-card hover-scale">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-white/70 mb-1">总参赛人数</h3>
+            <p id="totalPlayers" class="text-3xl font-cinzel font-bold text-poker-gold">--</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-poker-gold/20 flex items-center justify-center">
+            <i class="fa fa-users text-poker-gold text-xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-poker-darkGreen/70 rounded-lg p-6 border border-poker-gold/30 shadow-card hover-scale">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-white/70 mb-1">总奖金池</h3>
+            <p id="totalPrize" class="text-3xl font-cinzel font-bold text-poker-gold">--</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-poker-gold/20 flex items-center justify-center">
+            <i class="fa fa-money text-poker-gold text-xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-poker-darkGreen/70 rounded-lg p-6 border border-poker-gold/30 shadow-card hover-scale">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-white/70 mb-1">平均筹码</h3>
+            <p id="avgScore" class="text-3xl font-cinzel font-bold text-poker-gold">--</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-poker-gold/20 flex items-center justify-center">
+            <i class="fa fa-calculator text-poker-gold text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="mt-16 py-8 border-t border-poker-gold/20">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-white/60">© 2025 德州扑克官方排行榜 | 专业的扑克竞技平台</p>
+      <div class="flex justify-center space-x-6 mt-4">
+        <a href="#" class="text-white/60 hover:text-poker-gold transition-colors">
+          <i class="fa fa-weibo text-xl"></i>
+        </a>
+        <a href="#" class="text-white/60 hover:text-poker-gold transition-colors">
+          <i class="fa fa-wechat text-xl"></i>
+        </a>
+        <a href="#" class="text-white/60 hover:text-poker-gold transition-colors">
+          <i class="fa fa-instagram text-xl"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 加载排行榜数据
+    async function loadRanking() {
+      const season = document.getElementById('season').value;
+      const table = document.getElementById('rankingTable');
+      const tbody = document.getElementById('rankingBody');
+      const loading = document.getElementById('loading');
+      const totalPlayers = document.getElementById('totalPlayers');
+      const totalPrize = document.getElementById('totalPrize');
+      const avgScore = document.getElementById('avgScore');
+
+      // 显示加载状态
+      loading.style.display = 'flex';
+      table.style.display = 'none';
+      tbody.innerHTML = '';
+      totalPlayers.textContent = '--';
+      totalPrize.textContent = '--';
+      avgScore.textContent = '--';
+
+      try {
+        // 从/data目录获取JSON数据
+        const res = await fetch(`./rank/data/${season}.json`);
+        
+        if (!res.ok) {
+          throw new Error(`数据加载失败: ${res.statusText}`);
+        }
+        
+        const data = await res.json();
+
+        // 计算统计数据
+        const total = data.length;
+        const totalScore = data.reduce((sum, player) => sum + player.score, 0);
+        const avg = Math.floor(totalScore / total);
+        
+        // 更新统计信息
+        totalPlayers.textContent = total;
+        totalPrize.textContent = '¥' + (total * 1000).toLocaleString();
+        avgScore.textContent = avg.toLocaleString();
+
+        // 渲染表格行
+        data.forEach((item, index) => {
+          const row = document.createElement('tr');
+          row.className = 'border-b border-poker-gold/10 hover-scale card-flip';
+          row.style.animationDelay = `${index * 0.1}s`;
+          
+          // 设置排名样式
+          let rankStyle = '';
+          let rankIcon = '';
+          
+          if (index === 0) {
+            rankStyle = 'bg-poker-gold/20 text-poker-gold font-bold';
+            rankIcon = '<i class="fa fa-trophy mr-2"></i>';
+          } else if (index === 1) {
+            rankStyle = 'bg-gray-300/20 text-gray-300 font-bold';
+            rankIcon = '<i class="fa fa-medal mr-2"></i>';
+          } else if (index === 2) {
+            rankStyle = 'bg-amber-700/20 text-amber-700 font-bold';
+            rankIcon = '<i class="fa fa-award mr-2"></i>';
+          } else {
+            rankStyle = 'text-white/80';
+            rankIcon = `${index + 1}.`;
+          }
+          
+          // 设置状态样式
+          let statusClass = '';
+          if (item.status === '冠军') statusClass = 'text-poker-gold font-bold';
+          else if (item.status === '亚军') statusClass = 'text-gray-300 font-bold';
+          else if (item.status === '季军') statusClass = 'text-amber-700 font-bold';
+          else statusClass = 'text-white/80';
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 ${rankStyle}">
+               ${index + 1}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-poker-darkGreen/70 flex items-center justify-center mr-3">
+                  <span class="text-poker-gold font-cinzel">${item.name.charAt(0)}</span>
+                </div>
+                <span class="font-cinzel text-lg">${item.name}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div class="chip-animation w-8 h-8 rounded-full bg-poker-gold/20 flex items-center justify-center mr-2">
+                  <i class="fa fa-money text-poker-gold"></i>
+                </div>
+                <span class="font-cinzel text-lg">${item.score.toLocaleString()}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 rounded-full ${statusClass} border border-poker-gold/30">
+                ${item.status}
+              </span>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        // 显示表格，隐藏加载状态
+        table.style.display = '';
+        loading.style.display = 'none';
+        
+      } catch (error) {
+        loading.innerHTML = `
+          <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-red-500/50 border-t-red-500 rounded-full animate-spin mb-4"></div>
+            <p class="text-xl text-red-400">加载失败，请稍后重试</p>
+            <p class="text-white/60 mt-2">${error.message}</p>
+          </div>
+        `;
+        console.error(error);
+      }
+    }
+
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      loadRanking();
+      
+      // 添加页面滚动效果
+      window.addEventListener('scroll', function() {
+        const scrollPosition = window.scrollY;
+        const parallaxElements = document.querySelectorAll('.parallax');
+        
+        parallaxElements.forEach(element => {
+          const speed = 0.5;
+          element.style.transform = `translateY(${scrollPosition * speed}px)`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+    
