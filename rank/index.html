@@ -118,6 +118,14 @@
         <div class="relative">
           <select id="season" onchange="loadRanking()" class="w-full md:w-64 bg-poker-darkGreen/80 border border-poker-gold/50 text-white rounded-lg px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-poker-gold/80 transition-all">
 
+
+
+
+            <option value="season11">第十一届</option>   
+            <option value="season6">第六届</option>   
+            <option value="season5">第五届</option>   
+            <option value="season4">第四届</option>            
+            <option value="season3">第三届</option>
             <option value="season2">第二届</option>
             <option value="season1">第一届</option>
             
@@ -136,7 +144,7 @@
             </div>
             <div>
               <h3 class="font-cinzel text-xl font-medium text-poker-gold">当前赛季</h3>
-              <p class="text-white/70">第五届 - 2025年夏季赛</p>
+              <p class="text-white/70">S12 - 2025年夏季赛</p>
             </div>
           </div>
         </div>
@@ -258,7 +266,7 @@
         
         // 更新统计信息
         totalPlayers.textContent = total;
-        totalPrize.textContent = '¥' + (total * 1000).toLocaleString();
+        totalPrize.textContent = '$' + (total * 1000000).toLocaleString();
         avgScore.textContent = avg.toLocaleString();
 
         // 渲染表格行
